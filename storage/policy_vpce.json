@@ -1,0 +1,35 @@
+{"Version": "2012-10-17",
+    "Statement": [
+         {
+            "Sid":"AWSLogDeliveryWrite",
+            "Effect":"Allow",
+            "Principal": { "Service":"delivery.logs.amazonaws.com" },
+            "Action":  "s3:PutObject",
+            "Resource":  "${bucket_arns}/AWSLogs/${aws_acct}/*",
+            "Condition": {
+                "ArnLike": { "aws:SourceArn":"arn:aws:logs:${region_info}:${aws_acct}:*" },
+                "StringEquals":{
+                    "aws:SourceAccount":"${aws_acct}",
+                    "s3:x-amz-acl":"bucket-owner-full-control"
+                }
+            }
+         },
+         {
+            "Sid":"AWSLogDeliveryAclCheck",
+            "Effect":"Allow",
+            "Principal":{
+                "Service":"delivery.logs.amazonaws.com"
+            },
+            "Action":"s3:GetBucketAcl",
+            "Resource":"${bucket_arns}",
+            "Condition":{
+                "ArnLike": { 
+                    "aws:SourceArn": "arn:aws:logs:${region_info}:${aws_acct}:*"
+                },
+                "StringEquals": { 
+                    "aws:SourceAccount":"${aws_acct}" }
+            }
+         }
+
+     ]
+ }

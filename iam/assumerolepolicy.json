@@ -1,0 +1,16 @@
+{
+    "Version" : "2012-10-17",
+    "Statement" : [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal" : {
+                "Service" : ["ec2.amazonaws.com", "s3.amazonaws.com", "ssm.amazonaws.com"]
+                
+            },
+            "Effect": "Allow",
+            "Sid": "AllowEC2toServices"
+            
+        }
+        
+        ]
+}
