@@ -2,15 +2,19 @@ variable "vpc_cidr" {
 default =""
 }
 
-variable "private_subnets" {
-  type    = list(string)
-  default = []
+variable "firewall_subnet" {
+  type = list(string)
+  #default = []
 }
 
-variable "public_subnets" {
-  type    = list(string)
-  default = []
+variable "workload_subnet" {
+  type = list(string)
+  #default = []
+}
 
+variable "nat_gw_subnet" {
+  type = list(string)
+  #default = []
 }
 
 variable "accessip" {

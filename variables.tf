@@ -1,24 +1,28 @@
 variable "aws_region" {
-  default = "eu-west-1"
+  default = "eu-west-2"
 }
 
 variable "project_name" {
-  default = "ProjectInfrastructure"
+  default = "AWSNetworkFirewall"
 }
 
 variable "vpc_cidr" {
 }
 
 
-variable "private_subnets" {
+variable "firewall_subnet" {
   type = list(string)
   #default = []
 }
 
-variable "public_subnets" {
+variable "workload_subnet" {
   type = list(string)
   #default = []
+}
 
+variable "nat_gw_subnet" {
+  type = list(string)
+  #default = []
 }
 
 variable "accessip" {
@@ -33,15 +37,15 @@ variable "instance_count" {
   default = 1
 }
 
-variable "policy_name" {
+variable "flowlog_policy" {
   default = ""
 }
 
-variable "role_name" {
+variable "flowlog_role" {
   default = ""
 }
 
-variable "s3_policy" {
+variable "ssm_role" {
   default = ""
 }
 
@@ -50,25 +54,7 @@ variable "instance_profile" {
 }
 
 
-variable "instance_hana_db01" {}
-variable "hana_db_ami01" {}
-variable hana_db_disk_root{}
-variable hana_db_disk_sap{}
-variable hana_db_disk_shared{}
-variable hana_db_disk_data{}
-variable hana_db_disk_log{}
 
-variable "instance_hana_db02" {}
-variable "hana_db_ami02" {}
-variable "instance_hana_app" {}
-variable "hana_app_ami" {}
-variable "hana_app_disk" {}
-
-
-variable "instance_bastion" {}
-variable "bastion_ami" {}
-variable "bastion_disk" {}
-
-variable "instance_web_sap" {}
-variable "web_sap_ami" {}
-variable "web_sap_disk" {}
+variable "private_instance" {}
+variable "private_ami" {}
+variable "private_disk" {}
