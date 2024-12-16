@@ -1,43 +1,4 @@
 
-resource "aws_default_route_table" "tf_private_rt" {
-  
-  default_route_table_id = aws_vpc.tf_vpc.default_route_table_id
-  #propagating_vgws = [ aws_vpn_gateway.vpg-alsafadi.id ]
-  route  {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id             = aws_nat_gateway.nat_gw.id
-  }
-   
-  tags = {
-    Name = "Private RT - ${var.project_name}"
-  }
-}
-
-
-
-resource "aws_subnet" "tf_private_subnet" {
-  count = 2
-  vpc_id                  = aws_vpc.tf_vpc.id
-  cidr_block              = var.private_subnets[count.index]
-  #cidr_block              = var.private_subnets[0]
-  map_public_ip_on_launch = false
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  #availability_zone       = data.aws_availability_zones.available.names[0]
-
-
-  tags = {
-    Name = "Private Subnet - ${var.project_name}"
-  }
-}
-
-
-resource "aws_route_table_association" "tf_private_assoc" {
-  count          = length(aws_subnet.tf_private_subnet)
-  #subnet_id      = aws_subnet.tf_private_subnet.id
-  subnet_id = aws_subnet.tf_private_subnet.*.id[count.index]
-  route_table_id = aws_default_route_table.tf_private_rt.id  
-}
-
 
 resource "aws_security_group" "tf_private_sg" {
   name        = "tf_private_sg"
