@@ -53,7 +53,7 @@ resource "aws_internet_gateway" "internet_gw" {
 //SUBNETS
 //*******
 resource "aws_subnet" "nat_gw_subnet" {
-  count = 2
+  count = 1
   vpc_id                  = aws_vpc.fw_vpc.id
   cidr_block              = var.nat_gw_subnet[count.index]
   map_public_ip_on_launch = false
