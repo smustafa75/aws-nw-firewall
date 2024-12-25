@@ -8,7 +8,7 @@ output "public_net" {
 }
 
 output "vpcname" {
-  value = aws_vpc.tf_vpc.id
+  value = aws_vpc.fw_vpc.id
 }
 
 output "p_subnet_id"{

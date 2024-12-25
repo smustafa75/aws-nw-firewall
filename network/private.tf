@@ -3,7 +3,7 @@
 resource "aws_security_group" "tf_private_sg" {
   name        = "tf_private_sg"
   description = "Access instances in private subnet"
-  vpc_id      = aws_vpc.tf_vpc.id
+  vpc_id      = aws_vpc.fw_vpc.id
 
  /* ingress {
     from_port   = 22

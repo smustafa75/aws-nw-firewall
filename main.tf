@@ -31,7 +31,7 @@ module "storage" {
     module.network.aws_vpc_endpoint
   ]
 }
-*/
+
 
 module "compute" {
   source     = "./compute"
@@ -58,7 +58,8 @@ module "compute" {
     module.iam.iam_instance_profile_arn
   ]
 }
-
+*/
+/*
 module "iam" {
   source         = "./iam"
   policy_name    = var.policy_name
@@ -77,4 +78,4 @@ module "cloudwatch" {
   region_info    = data.aws_region.current.name
   account_id     = data.aws_caller_identity.current.account_id
   partition_info = data.aws_partition.current.partition
-}
+}*/
