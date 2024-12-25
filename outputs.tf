@@ -4,19 +4,23 @@ output "VPC_Name" {
 }
 
 
-output "Private_Subnets" {
-  description = "Private Subnets"
-  value       = concat(module.network.private_net, module.network.private_subnets_cidr)
+output "Nat_gw_Subnets" {
+  description = "NAT GW Subnets"
+  value       = concat(module.network.nat_gateway_subnet, module.network.nat_gw_subnets_cidr)
 }
 
-output "Public_Subnets" {
-  description = "Public Subnets"
-  value       = concat(module.network.public_net, module.network.public_subnets_cidr)
+output "Firewall_Subnets" {
+  description = "Firewall Subnets"
+  value       = concat(module.network.firewall_subnet, module.network.firewall_subnets_cidr)
 }
 
-output "private_instance" {
+output "Workload_Subnets" {
+  description = "Workload Subnets"
+  value       = concat(module.network.workload_subnet, module.network.workload_subnets_cidr)
+}
+/*output "private_instance" {
   value = module.compute.private_instance
-}
+}*/
 
 /*
 output "Bucket_ID" {

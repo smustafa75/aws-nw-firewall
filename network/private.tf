@@ -1,6 +1,6 @@
 
 
-resource "aws_security_group" "tf_private_sg" {
+resource "aws_security_group" "private_sg" {
   name        = "tf_private_sg"
   description = "Access instances in private subnet"
   vpc_id      = aws_vpc.fw_vpc.id
@@ -165,7 +165,7 @@ resource "aws_flow_log" "flow_log_config" {
   log_destination_type ="s3"
   max_aggregation_interval = 60
   traffic_type    = "ALL"
-  vpc_id          = aws_vpc.tf_vpc.id
+  vpc_id          = aws_vpc.fw_vpc.id
   destination_options {
     file_format = "plain-text"
     hive_compatible_partitions = false

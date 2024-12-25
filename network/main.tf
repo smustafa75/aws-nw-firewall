@@ -16,9 +16,9 @@ resource "aws_vpc" "fw_vpc" {
 
 
 resource "aws_eip" "nat_gw_eip" {
-  depends_on = [
-    aws_route_table_association.tf_public_assoc
-  ]
+//  depends_on = [
+//    aws_route_table_association.tf_public_assoc
+//  ]
   vpc = true
   tags = {
     Name = "EIP - ${var.project_name}"
@@ -27,12 +27,12 @@ resource "aws_eip" "nat_gw_eip" {
 
 resource "aws_nat_gateway" "nat_gw" {
   depends_on = [
-    aws_eip.tf_nat_gw_eip,
-    aws_subnet.tf_public_subnet
+    aws_eip.nat_gw_eip,
+    aws_subnet.nat_gw_subnet
   ]
-  allocation_id = aws_eip.tf_nat_gw_eip.id
+  allocation_id = aws_eip.nat_gw_eip.id
   #subnet_id = element(aws_vpc.tf_vpc.tf_public_subnet[count.index])
-  subnet_id = aws_subnet.tf_public_subnet[0].id
+  subnet_id = aws_subnet.nat_gw_subnet[0].id
   tags = {
     Name = "NATGW - ${var.project_name}"
   }
@@ -43,7 +43,7 @@ resource "aws_nat_gateway" "nat_gw" {
 //**********
 
 resource "aws_internet_gateway" "internet_gw" {
-  vpc_id = aws_vpc.tf_vpc.id 
+  vpc_id = aws_vpc.fw_vpc.id 
 
   tags = {
     Name = "FW IGW - ${var.project_name}"
@@ -113,6 +113,13 @@ route  {
     Name = "NAT GW RT - ${var.project_name}"
   }
 }
+/*
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.fw_vpc.id
+  tags = {
+    Name = "PUBLIC RT - ${var.project_name}"
+  }
+}*/
 
 //natgw-route-table
 
@@ -122,7 +129,7 @@ resource "aws_route_table" "natgw_route_table" {
   route {
     cidr_block = "0.0.0.0/0"
     //*****************REPLACE GW ID WITH FW GWLB*****************
-    gateway_id = aws_internet_gateway.tf_internet_gw.id 
+    gateway_id = aws_internet_gateway.internet_gw.id 
 
   }
 
