@@ -134,7 +134,7 @@ resource "aws_route_table" "natgw_route_table" {
   }
 
   tags = {
-    Name = "NAT GW RT - ${var.project_name}"
+    Name = "IGW RT - ${var.project_name}"
   }
 }
 

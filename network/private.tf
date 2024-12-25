@@ -153,7 +153,7 @@ resource "aws_vpc_endpoint_subnet_association" "ssm-msgs-assoc" {
   subnet_id       = aws_subnet.tf_private_subnet.*.id[count.index]
 }
 */
-
+/*
 resource "random_id" "log_group_id" {
   byte_length = 2
 
@@ -221,3 +221,4 @@ resource "aws_iam_role_policy" "poc-vpc-flow-log-policy" {
 EOF
 }
 
+*/
