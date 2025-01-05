@@ -131,7 +131,8 @@ resource "aws_route_table" "natgw-rt" {
   route {
     cidr_block = "0.0.0.0/0"
     //ADD ROUTE to FW GWLB
-    nat_gateway_id = aws_nat_gateway.nat_gw.id
+    //nat_gateway_id = aws_nat_gateway.nat_gw.id
+    vpc_endpoint_id = tolist(aws_networkfirewall_firewall.network-firewall.firewall_status[0].sync_states)[0].attachment[0].endpoint_id
   }
 
   tags = {
@@ -172,11 +173,11 @@ resource "aws_route_table_association" "igw-2-public-rt-assoc" {
 //RT Associations
 
 
-resource "aws_route_table_association" "public-rt-2-internwt-assoc" {
+resource "aws_route_table_association" "public-rt-2-internet-assoc" {
   count          = length(aws_subnet.firewall_subnet)
   #subnet_id      = aws_subnet.tf_private_subnet.id
-  subnet_id = aws_subnet.firewall_subnet.*.id[count.index]
-  route_table_id = aws_route_table.igw-2-piublic-rt.id
+  subnet_id = aws_subnet.firewall_subnet.*.id[0]
+  route_table_id = aws_route_table.public-rt-2-internet.id
 }
 
 resource "aws_route_table_association" "private-rt-assoc" {
