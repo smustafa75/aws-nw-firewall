@@ -96,57 +96,84 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
     service_name = "com.amazonaws.${var.region_info}.s3"
 }
 
-resource "aws_route_table_association" "tf_private_assoc" {
-  count          = length(aws_subnet.workload_subnet)
-  #subnet_id      = aws_subnet.tf_private_subnet.id
-  subnet_id = aws_subnet.workload_subnet.*.id[count.index]
-  route_table_id = aws_route_table.private_rt.id  
-}
 
-resource "aws_route_table" "private_rt" {
+resource "aws_route_table" "public-rt-2-internet" {
   vpc_id = aws_vpc.fw_vpc.id
+
 route  {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id             = aws_nat_gateway.nat_gw.id
+    gateway_id = aws_internet_gateway.internet_gw.id 
   }   
+
   tags = {
-    Name = "NAT GW RT - ${var.project_name}"
+    Name = "PRTI - ${var.project_name}"
   }
 }
-/*
-resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.fw_vpc.id
-  tags = {
-    Name = "PUBLIC RT - ${var.project_name}"
-  }
-}*/
 
-//natgw-route-table
 
-resource "aws_route_table" "natgw_route_table" {
+resource "aws_route_table" "private-rt" {
   vpc_id = aws_vpc.fw_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    //*****************REPLACE GW ID WITH FW GWLB*****************
-    gateway_id = aws_internet_gateway.internet_gw.id 
-
+    nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
 
   tags = {
-    Name = "IGW RT - ${var.project_name}"
+    Name = "PRIVATE RT - ${var.project_name}"
   }
 }
 
-resource "aws_route_table_association" "nat_gw_subnet_assoc" {
+resource "aws_route_table" "natgw-rt" {
+  vpc_id = aws_vpc.fw_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    //ADD ROUTE to FW GWLB
+    nat_gateway_id = aws_nat_gateway.nat_gw.id
+  }
+
+  tags = {
+    Name = "PRIVATE RT - ${var.project_name}"
+  }
+}
+
+resource "aws_route_table" "igw-2-piublic-rt" {
+  vpc_id = aws_vpc.fw_vpc.id
+
+  /*route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gw.id
+  }*/
+  //ADD Rooutes to FW and rest of netwoorks
+  //Add Edge Assoc to IGW
+
+  tags = {
+    Name = "PRIVATE RT - ${var.project_name}"
+  }
+}
+
+
+
+//RT Associations
+resource "aws_route_table_association" "public-rt-2-internwt-assoc" {
+  count          = length(aws_subnet.firewall_subnet)
+  #subnet_id      = aws_subnet.tf_private_subnet.id
+  subnet_id = aws_subnet.firewall_subnet.*.id[count.index]
+  route_table_id = aws_route_table.igw-2-piublic-rt.id
+}
+
+resource "aws_route_table_association" "private-rt-assoc" {
+  count          = length(aws_subnet.workload_subnet)
+  #subnet_id      = aws_subnet.tf_private_subnet.id
+  subnet_id = aws_subnet.workload_subnet.*.id[count.index]
+  route_table_id = aws_route_table.private-rt.id
+}
+
+resource "aws_route_table_association" "natgw-rt-assoc" {
   count          = length(aws_subnet.nat_gw_subnet)
   #subnet_id      = aws_subnet.tf_private_subnet.id
   subnet_id = aws_subnet.nat_gw_subnet.*.id[count.index]
-  route_table_id = aws_route_table.natgw_route_table.id  
+  route_table_id = aws_route_table.natgw-rt.id
 }
 
-resource "aws_route_table_association" "tf_natgw_assoc" {
-  count          = length(aws_subnet.nat_gw_subnet)
-  subnet_id      = aws_subnet.nat_gw_subnet.*.id[count.index]
-  route_table_id = aws_route_table.natgw_route_table.id
-}
