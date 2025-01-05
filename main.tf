@@ -31,7 +31,7 @@ module "storage" {
     module.network.aws_vpc_endpoint
   ]
 }
-
+*/
 
 module "compute" {
   source     = "./compute"
@@ -45,7 +45,6 @@ module "compute" {
 
   workload_net             = module.network.workload_net
   public_security_group  = module.network.public_security_group
-  private_net            = module.network.private_net
   private_security_group = module.network.private_security_group
   instance_profile       = module.iam.iam_instance_profile_arn
   vpc_id                 = module.network.vpcname
@@ -58,8 +57,8 @@ module "compute" {
     module.iam.iam_instance_profile_arn
   ]
 }
-*/
-/*
+
+
 module "iam" {
   source         = "./iam"
   policy_name    = var.policy_name
@@ -70,7 +69,7 @@ module "iam" {
   partition_info = data.aws_partition.current.partition
 }
 
-
+/*
 module "cloudwatch" {
   source         = "./cloudwatch"
   hana_db01    = module.compute.hana_db01_id

@@ -1,27 +1,39 @@
-resource "aws_iam_role" "ec2_access_role" {
-  name               = var.role_name
-  path = "/"
-  managed_policy_arns = [
-    "arn:${var.partition_info}:iam::aws:policy/service-role/AmazonSSMAutomationRole",
-    aws_iam_policy.ssm-session-s3.arn,
-    "arn:${var.partition_info}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    ]
-    inline_policy {
-    name = "PassRolePolicy"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          "Effect" : "Allow",
-          "Action" : "iam:PassRole",
-          "Resource" : "*"
-        }
-      ]
-    })
-  }
-  assume_role_policy = "${file("./iam/assumerolepolicy.json")}"
+resource "aws_iam_role" "fw-ec2-role" {
+  name = var.role_name
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": ["ec2.amazonaws.com","s3.amazonaws.com","ssm.amazonaws.com"]
+      },
+      "Effect": "Allow",
+      "Sid": "fw-ec2-role"
+    }
+  ]
+}
+EOF
 
 }
+
+resource "aws_iam_role_policy_attachment" "attach_pol_01" {
+  role       = aws_iam_role.fw-ec2-role.name
+  policy_arn = "arn:${var.partition_info}:iam::aws:policy/service-role/AmazonSSMAutomationRole"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_pol_02" {
+  role       = aws_iam_role.fw-ec2-role.name
+  policy_arn = "arn:${var.partition_info}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_pol_03" {
+  role       = aws_iam_role.fw-ec2-role.name
+  policy_arn = aws_iam_policy.ssm-session-s3.arn
+}
+
 
 resource "aws_iam_policy" "policy" {
   name        = var.policy_name
@@ -37,19 +49,19 @@ resource "aws_iam_policy" "s3_policy" {
 
 resource "aws_iam_policy_attachment" "policy_to_role" {
   name       = "Cloudwatch access"
-  roles      = [aws_iam_role.ec2_access_role.name] 
+  roles      = [aws_iam_role.fw-ec2-role.name] 
   policy_arn = aws_iam_policy.policy.arn
 }
 
 resource "aws_iam_policy_attachment" "s3_policy_to_role" {
   name       = "S3 access"
-  roles      = [aws_iam_role.ec2_access_role.name] 
+  roles      = [aws_iam_role.fw-ec2-role.name] 
   policy_arn = aws_iam_policy.s3_policy.arn
 }
 
 resource "aws_iam_instance_profile" "iam_profile" {
   name = "iam_instance_profile"
-  role = aws_iam_role.ec2_access_role.name 
+  role = aws_iam_role.fw-ec2-role.name 
 }
 
 resource "aws_iam_policy" "ssm-session-s3" {

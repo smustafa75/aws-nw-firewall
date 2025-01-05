@@ -12,7 +12,7 @@ flowlog_role = "VPC-Flowlog-Writer"
 flowlog_policy = "VPCFlowLogsWriter"
 
 
-ssm_role = "aws-ssm-role"
+//ssm_role = "aws-ssm-role"
 //AmazonS3FullAccess,AmazonSSMFullAccess,AmazonSSMManagedEC2InstanceDefaultPolicy, AmazonSSMManagedInstanceCore and CloudWatchAgent ServerPolicy
 
 instance_profile = ""
@@ -21,3 +21,6 @@ accessip         = "0.0.0.0/0"
 private_instance = "t2.micro"
 private_ami      = ""
 private_disk     = "60"
+policy_name = "fw-role-policy"
+role_name = "fw-iam-role"
+s3_policy = "fw-s3-policy"

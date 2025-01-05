@@ -45,7 +45,7 @@ variable "flowlog_role" {
   default = ""
 }
 
-variable "ssm_role" {
+variable "role_name" {
   default = ""
 }
 
@@ -53,8 +53,13 @@ variable "instance_profile" {
   default = ""
 }
 
+variable "policy_name" {
+  default = ""
+}
 
-
+variable "s3_policy" {
+  default = ""
+}
 variable "private_instance" {}
 variable "private_ami" {}
 variable "private_disk" {}
