@@ -13,12 +13,7 @@ resource "aws_vpc" "fw_vpc" {
 //NAT GW
 //******
 
-
-
 resource "aws_eip" "nat_gw_eip" {
-//  depends_on = [
-//    aws_route_table_association.tf_public_assoc
-//  ]
   vpc = true
   tags = {
     Name = "EIP - ${var.project_name}"
@@ -31,7 +26,6 @@ resource "aws_nat_gateway" "nat_gw" {
     aws_subnet.nat_gw_subnet
   ]
   allocation_id = aws_eip.nat_gw_eip.id
-  #subnet_id = element(aws_vpc.tf_vpc.tf_public_subnet[count.index])
   subnet_id = aws_subnet.nat_gw_subnet[0].id
   tags = {
     Name = "NATGW - ${var.project_name}"
@@ -57,7 +51,6 @@ resource "aws_subnet" "nat_gw_subnet" {
   vpc_id                  = aws_vpc.fw_vpc.id
   cidr_block              = var.nat_gw_subnet[count.index]
   map_public_ip_on_launch = false
-  #availability_zone       = data.aws_availability_zones.available.names[count.index]
   availability_zone       = data.aws_availability_zones.available.names[0]
   tags = {
     Name = "NAT GW Subnet - ${var.project_name}"
@@ -69,7 +62,6 @@ resource "aws_subnet" "firewall_subnet" {
   vpc_id                  = aws_vpc.fw_vpc.id
   cidr_block              = var.firewall_subnet[count.index]
   map_public_ip_on_launch = false
-  #availability_zone       = data.aws_availability_zones.available.names[count.index]
   availability_zone       = data.aws_availability_zones.available.names[0]
   tags = {
     Name = "FW Subnet - ${var.project_name}"
@@ -81,7 +73,6 @@ resource "aws_subnet" "workload_subnet" {
   vpc_id                  = aws_vpc.fw_vpc.id
   cidr_block              = var.workload_subnet[count.index]
   map_public_ip_on_launch = false
-  #availability_zone       = data.aws_availability_zones.available.names[count.index]
   availability_zone       = data.aws_availability_zones.available.names[0]
   tags = {
     Name = "Workload Subnet - ${var.project_name}"
@@ -130,8 +121,6 @@ resource "aws_route_table" "natgw-rt" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    //ADD ROUTE to FW GWLB
-    //nat_gateway_id = aws_nat_gateway.nat_gw.id
     vpc_endpoint_id = tolist(aws_networkfirewall_firewall.network-firewall.firewall_status[0].sync_states)[0].attachment[0].endpoint_id
   }
 
