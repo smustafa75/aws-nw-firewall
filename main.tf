@@ -1,7 +1,3 @@
-/*provider "aws" {
-  region  = var.aws_region
-  profile = "default"
-}*/
 
 provider "aws" {
   region  = var.aws_region
@@ -15,23 +11,9 @@ module "network" {
   workload_subnet  = var.workload_subnet
   nat_gw_subnet = var.nat_gw_subnet
   region_info     = data.aws_region.current.name
- // logging_bucket  = module.storage.bucket_arn
   project_name    = var.project_name
 
 }
-
-/*
-module "storage" {
-  source       = "./storage"
-  project_name = var.project_name
-  vpcendpoint  = module.network.vpc_endpoint
-  region_info    = data.aws_region.current.name
-
-  depends_on = [
-    module.network.aws_vpc_endpoint
-  ]
-}
-*/
 
 module "compute" {
   source     = "./compute"
@@ -66,13 +48,3 @@ module "iam" {
   account_id     = data.aws_caller_identity.current.account_id
   partition_info = data.aws_partition.current.partition
 }
-
-/*
-module "cloudwatch" {
-  source         = "./cloudwatch"
-  hana_db01    = module.compute.hana_db01_id
-  hana_db02    = module.compute.hana_db02_id
-  region_info    = data.aws_region.current.name
-  account_id     = data.aws_caller_identity.current.account_id
-  partition_info = data.aws_partition.current.partition
-}*/

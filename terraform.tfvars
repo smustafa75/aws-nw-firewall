@@ -11,10 +11,6 @@ instance_count   = "1"
 flowlog_role = "VPC-Flowlog-Writer"
 flowlog_policy = "VPCFlowLogsWriter"
 
-
-//ssm_role = "aws-ssm-role"
-//AmazonS3FullAccess,AmazonSSMFullAccess,AmazonSSMManagedEC2InstanceDefaultPolicy, AmazonSSMManagedInstanceCore and CloudWatchAgent ServerPolicy
-
 instance_profile = ""
 accessip         = "0.0.0.0/0"
 
