@@ -94,6 +94,7 @@ resource "aws_subnet" "workload_subnet" {
 resource "aws_vpc_endpoint" "s3_endpoint" {
     vpc_id = aws_vpc.fw_vpc.id
     service_name = "com.amazonaws.${var.region_info}.s3"
+    route_table_ids = [ aws_route_table.private-rt.id ]
 }
 
 
@@ -169,6 +170,8 @@ resource "aws_route_table_association" "igw-2-public-rt-assoc" {
 
 
 //RT Associations
+
+
 resource "aws_route_table_association" "public-rt-2-internwt-assoc" {
   count          = length(aws_subnet.firewall_subnet)
   #subnet_id      = aws_subnet.tf_private_subnet.id

@@ -19,7 +19,7 @@ instance_profile = ""
 accessip         = "0.0.0.0/0"
 
 private_instance = "t2.micro"
-private_ami      = ""
+private_ami      = "ami-0c76bd4bd302b30ec"
 private_disk     = "60"
 policy_name = "fw-role-policy"
 role_name = "fw-iam-role"

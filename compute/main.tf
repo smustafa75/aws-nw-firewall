@@ -1,7 +1,8 @@
 resource "aws_instance" "private_instance" {
   ami           = var.private_ami
   instance_type = var.private_instance
-  vpc_security_group_ids = [ var.public_security_group ]
+  iam_instance_profile = var.instance_profile
+  vpc_security_group_ids = [ var.private_security_group ]
   subnet_id = var.workload_net[0]
 
 root_block_device {

@@ -46,13 +46,11 @@ module "compute" {
   workload_net             = module.network.workload_subnet
   public_security_group  = module.network.public_security_group
   private_security_group = module.network.private_security_group
-  instance_profile       = module.iam.iam_instance_profile_arn
+  instance_profile       = module.iam.iam_instance_profile
   vpc_id                 = module.network.vpcname
 
   project_name = var.project_name
 
-
-  #instance_count   = var.instance_count
   depends_on = [
     module.iam.iam_instance_profile_arn
   ]

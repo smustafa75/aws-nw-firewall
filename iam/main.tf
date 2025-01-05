@@ -1,22 +1,16 @@
 resource "aws_iam_role" "fw-ec2-role" {
   name = var.role_name
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": ["ec2.amazonaws.com","s3.amazonaws.com","ssm.amazonaws.com"]
-      },
-      "Effect": "Allow",
-      "Sid": "fw-ec2-role"
-    }
-  ]
-}
-EOF
-
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "attach_pol_01" {
