@@ -43,7 +43,7 @@ module "compute" {
   private_disk     = var.private_disk
 
 
-  workload_net             = module.network.workload_net
+  workload_net             = module.network.workload_subnet
   public_security_group  = module.network.public_security_group
   private_security_group = module.network.private_security_group
   instance_profile       = module.iam.iam_instance_profile_arn
