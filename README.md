@@ -1,16 +1,14 @@
-# Project infrastructure for AWS NetworkFirewall
+# AWS NetworkFirewall Deployment
 
 This repo contains initial code to setup base infrastructure for AWS Network Firewall.
+We are covering 1x use case for inspecting traffic across private workloads out of multiple as show cased in AWS documentation.
 
-- Replace the TFVARS content carefully as it may have very high cost impact.
-- Compute module have some interesting content. Please read it.
+- Network module have some interesting content. Please read it well.
 
 ### Note:
-The script will create +/- 49 resources and may cross the free tier usage limit.
+The script will create +/- 39 resources and may cross the free tier usage limit.
 
-### Terraform Version ###
-Terraform v1.1.2
-+ provider registry.terraform.io/hashicorp/aws v3.71.0
-+ provider registry.terraform.io/hashicorp/random v3.1.0
-+ provider registry.terraform.io/hashicorp/template v2.2.0
+### Reference ###
 
+
+1. https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall/
