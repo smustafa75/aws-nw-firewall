@@ -141,12 +141,19 @@ resource "aws_route_table" "natgw-rt" {
 resource "aws_route_table" "igw-2-piublic-rt" {
   vpc_id = aws_vpc.fw_vpc.id
 
-  /*route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gw.id
-  }*/
-  //ADD Rooutes to FW and rest of netwoorks to GWLB of Firewall
-  
+  route {
+    cidr_block = "172.31.1.0/24"
+    vpc_endpoint_id = tolist(aws_networkfirewall_firewall.network-firewall.firewall_status[0].sync_states)[0].attachment[0].endpoint_id
+  }
+route {
+    cidr_block = "172.31.2.0/24"
+    vpc_endpoint_id = tolist(aws_networkfirewall_firewall.network-firewall.firewall_status[0].sync_states)[0].attachment[0].endpoint_id
+  }
+route {
+    cidr_block = "172.31.3.0/24"
+    vpc_endpoint_id = tolist(aws_networkfirewall_firewall.network-firewall.firewall_status[0].sync_states)[0].attachment[0].endpoint_id
+  }
+
   tags = {
     Name = "IGW2P RT - ${var.project_name}"
   }
@@ -183,16 +190,65 @@ resource "aws_route_table_association" "natgw-rt-assoc" {
   route_table_id = aws_route_table.natgw-rt.id
 }
 
-
-
-resource "aws_subnet" "nw-firewall" {
-  count = 1
-  vpc_id                  = aws_vpc.fw_vpc.id
-  cidr_block              = var.firewall_subnet[count.index]
-  map_public_ip_on_launch = false
-  #availability_zone       = data.aws_availability_zones.available.names[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  tags = {
-    Name = "NWFW - ${var.project_name}"
+resource "aws_networkfirewall_firewall" "network-firewall" {
+  name                = "fw-${var.project_name}"
+  firewall_policy_arn = aws_networkfirewall_firewall_policy.nw-firewall-policy.arn
+  vpc_id              = aws_vpc.fw_vpc.id
+  subnet_mapping {
+    subnet_id = aws_subnet.firewall_subnet[0].id
   }
+  tags = {
+    Name = "FW - ${var.project_name}"
+  }
+
+}
+
+
+
+resource "aws_networkfirewall_firewall_policy" "nw-firewall-policy" {
+  name = "firewall-policy-${var.project_name}"
+  firewall_policy {
+    stateless_default_actions          = ["aws:forward_to_sfe"]
+    stateless_fragment_default_actions = ["aws:forward_to_sfe"]
+    stateful_rule_group_reference {
+      resource_arn = aws_networkfirewall_rule_group.group-01.arn
+    }
+  }
+}
+
+resource "aws_networkfirewall_rule_group" "group-01" {
+  capacity    = 50
+  description = "Permits icmp traffic from source"
+  name        = "testing"
+  type        = "STATEFUL"
+  rule_group {
+    rules_source {
+      dynamic "stateful_rule" {
+        for_each = local.ips
+        content {
+          action = "PASS"
+          header {
+            destination      = "ANY"
+            destination_port = "ANY"
+            protocol         = "ICMP"
+            direction        = "ANY"
+            source_port      = "ANY"
+            source           = stateful_rule.value
+          }
+          rule_option {
+            keyword  = "sid"
+            settings = ["1"]
+          }
+        }
+      }
+    }
+  }
+
+  tags = {
+    Name = "permit HTTP from source"
+  }
+}
+
+locals {
+  ips = ["ANY"]
 }
