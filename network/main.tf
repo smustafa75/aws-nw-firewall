@@ -208,21 +208,10 @@ resource "aws_networkfirewall_firewall" "network-firewall" {
 
 
 
-resource "aws_networkfirewall_firewall_policy" "nw-firewall-policy" {
-  name = "firewall-policy-${var.project_name}"
-  firewall_policy {
-    stateless_default_actions          = ["aws:forward_to_sfe"]
-    stateless_fragment_default_actions = ["aws:forward_to_sfe"]
-    stateful_rule_group_reference {
-      resource_arn = aws_networkfirewall_rule_group.group-01.arn
-    }
-  }
-}
-
 resource "aws_networkfirewall_rule_group" "group-01" {
   capacity    = 50
   description = "Permits icmp traffic from source"
-  name        = "testing"
+  name        = "testing-statefull"
   type        = "STATEFUL"
   rule_group {
     rules_source {
@@ -248,10 +237,64 @@ resource "aws_networkfirewall_rule_group" "group-01" {
   }
 
   tags = {
-    Name = "permit HTTP from source"
+   Name = "FW - ${var.project_name}"
   }
 }
 
 locals {
   ips = ["ANY"]
+}
+
+resource "aws_networkfirewall_rule_group" "stateless-01" {
+  name        = "testing-stateless"
+  capacity    = 100
+  type        = "STATELESS"
+  description = "Stateless rule to allow all ICMP traffic"
+
+  rule_group {
+    rules_source {
+      stateless_rules_and_custom_actions {
+        stateless_rule {
+          rule_definition {
+            match_attributes {
+              protocols = [1] # Protocol 1 represents ICMP
+
+              source {
+                address_definition = "0.0.0.0/0" # Any source
+              }
+
+              destination {
+                address_definition = "0.0.0.0/0" # Any destination
+              }
+            }
+
+            actions = ["aws:pass"] # Allow the traffic
+          }
+
+          priority = 1 # Rule priority
+        }
+      }
+    }
+  }
+
+  tags = {
+    Name = "FW - ${var.project_name}"
+  }
+}
+
+
+resource "aws_networkfirewall_firewall_policy" "nw-firewall-policy" {
+  name = "firewall-policy-${var.project_name}"
+  firewall_policy {
+    stateless_default_actions          = ["aws:forward_to_sfe"]
+    stateless_fragment_default_actions = ["aws:forward_to_sfe"]
+    stateful_rule_group_reference {
+      resource_arn = aws_networkfirewall_rule_group.group-01.arn
+    }
+    
+    stateless_rule_group_reference {
+    priority = 1
+    resource_arn = aws_networkfirewall_rule_group.stateless-01.arn
+    }
+  }
 }
