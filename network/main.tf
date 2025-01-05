@@ -106,7 +106,7 @@ route  {
   }   
 
   tags = {
-    Name = "PRTI - ${var.project_name}"
+    Name = "PUBLIC RTI - ${var.project_name}"
   }
 }
 
@@ -134,7 +134,7 @@ resource "aws_route_table" "natgw-rt" {
   }
 
   tags = {
-    Name = "PRIVATE RT - ${var.project_name}"
+    Name = "NATGW RT - ${var.project_name}"
   }
 }
 
@@ -145,12 +145,18 @@ resource "aws_route_table" "igw-2-piublic-rt" {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gw.id
   }*/
-  //ADD Rooutes to FW and rest of netwoorks
-  //Add Edge Assoc to IGW
-
+  //ADD Rooutes to FW and rest of netwoorks to GWLB of Firewall
+  
   tags = {
-    Name = "PRIVATE RT - ${var.project_name}"
+    Name = "IGW2P RT - ${var.project_name}"
   }
+}
+
+//Add Edge Assoc to IGW
+
+resource "aws_route_table_association" "igw-2-public-rt-assoc" {
+  gateway_id     = aws_internet_gateway.internet_gw.id
+  route_table_id = aws_route_table.igw-2-piublic-rt.id
 }
 
 
@@ -177,3 +183,16 @@ resource "aws_route_table_association" "natgw-rt-assoc" {
   route_table_id = aws_route_table.natgw-rt.id
 }
 
+
+
+resource "aws_subnet" "nw-firewall" {
+  count = 1
+  vpc_id                  = aws_vpc.fw_vpc.id
+  cidr_block              = var.firewall_subnet[count.index]
+  map_public_ip_on_launch = false
+  #availability_zone       = data.aws_availability_zones.available.names[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  tags = {
+    Name = "NWFW - ${var.project_name}"
+  }
+}
