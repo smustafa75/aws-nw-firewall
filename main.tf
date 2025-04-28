@@ -8,8 +8,8 @@ module "network" {
   source          = "./network"
   vpc_cidr        = var.vpc_cidr
   firewall_subnet = var.firewall_subnet
-  workload_subnet  = var.workload_subnet
-  nat_gw_subnet = var.nat_gw_subnet
+  workload_subnet = var.workload_subnet
+  nat_gw_subnet   = var.nat_gw_subnet
   region_info     = data.aws_region.current.name
   project_name    = var.project_name
 
@@ -25,7 +25,7 @@ module "compute" {
   private_disk     = var.private_disk
 
 
-  workload_net             = module.network.workload_subnet
+  workload_net           = module.network.workload_subnet
   public_security_group  = module.network.public_security_group
   private_security_group = module.network.private_security_group
   instance_profile       = module.iam.iam_instance_profile

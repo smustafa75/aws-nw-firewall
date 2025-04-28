@@ -14,7 +14,7 @@ resource "aws_vpc" "fw_vpc" {
 //******
 
 resource "aws_eip" "nat_gw_eip" {
-  vpc = true
+  domain = "vpc"
   tags = {
     Name = "EIP - ${var.project_name}"
   }
